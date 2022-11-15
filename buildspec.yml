@@ -1,0 +1,45 @@
+version: 0.2
+
+env:
+ parameter-store:
+   DEMO_REPO_URL: "demo-repo"
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION
+      - DEMO_REPOSITORY_URI=$DEMO_REPO_URL/demo
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=demo-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+      - echo Image id is $IMAGE_TAG
+  build:
+    commands:
+      - echo Build started for demo
+      - echo Building the Docker image...
+      - echo Repo URL is $DEMO_REPO_URL
+      - ls -a
+      - docker-compose build
+      - docker images     
+      - docker image tag demo $DEMO_REPOSITORY_URI:$IMAGE_TAG
+      - docker image tag demo $DEMO_REPOSITORY_URI  
+      - docker image ls
+      - echo Tagging completed
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - echo Pushing docker images into
+      - echo $(aws ecr get-login-password)|docker login --password-stdin --username AWS $DEMO_REPO_URL
+
+      - docker push $DEMO_REPOSITORY_URI:$IMAGE_TAG
+      - docker push $DEMO_REPOSITORY_URI:latest
+
+      - docker image ls
+      - echo Writing image definitions file...
+      - printf '[{"name":"demo","imageUri":"%s"}]' $DEMO_REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - cat imagedefinitions.json 
+artifacts:
+    files: imagedefinitions.json
+    

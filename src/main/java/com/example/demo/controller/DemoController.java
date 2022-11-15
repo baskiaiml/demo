@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  *
  */
 @Controller
-@RequestMapping("/crud")
+@RequestMapping("/demo")
 public class DemoController {
 
 	@ResponseBody
@@ -23,5 +23,12 @@ public class DemoController {
 	public ResponseEntity<Object> healthCheck() {
 		
 		return new ResponseEntity<Object>("{\"status\":\"Spring Example Service is working\"}", HttpStatus.ACCEPTED);
+	}
+	
+	@ResponseBody
+	@GetMapping("/service")
+	public ResponseEntity<Object> demoService() {
+		
+		return new ResponseEntity<Object>("{\"status\":\"Demo Service is working\"}", HttpStatus.ACCEPTED);
 	}
 }

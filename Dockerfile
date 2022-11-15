@@ -1,0 +1,12 @@
+# For Java 11, try this
+FROM adoptopenjdk/openjdk11:alpine-jre
+
+# Refer to Maven build -> finalName
+ARG JAR_FILE=target/demo-0.0.1-SNAPSHOT.jar
+
+WORKDIR /opt/app
+
+COPY ${JAR_FILE} demo.jar
+
+# java -jar /opt/app/demo.jar
+ENTRYPOINT ["java","-jar","demo.jar"]

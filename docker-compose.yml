@@ -1,0 +1,16 @@
+version: "3"
+services:
+  demo:
+    container_name: demo
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - dirname=demo
+    image: demo
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2048m"
+    ports:
+        - 8080:8080
